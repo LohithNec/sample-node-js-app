@@ -48,6 +48,5 @@ jobs:
           
       - name: Pull docker image
         run: |
-          docker pull harbor.metabob.com/chartrepo/nodeapp-helm-charts
+          docker pull harbor.metabob.com/nodeapp-helm-charts/metabob-site
           ls -a
-             
