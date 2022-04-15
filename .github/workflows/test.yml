@@ -55,6 +55,6 @@ jobs:
           
       - name: Pull docker image
         run: |
-          helm chart pull harbor.metabob.com/chartrepo/nodeapp-helm-charts:0.1.0
+          helm pull harbor.metabob.com/chartrepo/nodeapp-helm-charts:0.1.0
           ls -a
            
