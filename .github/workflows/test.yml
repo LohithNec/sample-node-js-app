@@ -55,7 +55,7 @@ jobs:
           
       - name: Pull docker image
         run: |
-          helm pull harbor.metabob.com/integration/helm-charts/metabob-site:0.1.0 --username= ${{ secrets.HARBOR_USERNAME }} --password= ${{ secrets.HARBOR_PASSWORD }}
+          helm pull https://harbor.metabob.com/chartrepo/nodeapp-helm-charts --username= ${{ secrets.HARBOR_USERNAME }} --password= ${{ secrets.HARBOR_PASSWORD }}
           ls -a
              
         
