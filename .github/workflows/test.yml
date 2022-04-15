@@ -46,7 +46,15 @@ jobs:
           password: ${{ secrets.HARBOR_PASSWORD }}  
           
           
+      - name: Helm Install
+        run: |
+          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+          chmod 700 get_helm.sh
+          ./get_helm.sh
+          
+          
       - name: Pull docker image
         run: |
-          docker pull harbor.metabob.com/nodeapp-helm-charts/metabob-site
+          helm chart pull harbor.metabob.com/chartrepo/nodeapp-helm-charts:0.1.0
           ls -a
+           
