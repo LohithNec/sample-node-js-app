@@ -63,12 +63,8 @@ jobs:
       - name: Untar helm and update values
         run: |
           tar xvfz metabob-site-0.1.0.tgz
-          echo "after untar"
-          ls -a
-          echo "Moving to chart folder"
           cd chart
-          ls -a
-          sed -i 's/argocd/ARGOCD/' values.yaml
+          sed -i 's/tag:*/tag:${{ steps.get-tag.outputs.tag }}/g' values.yaml
           echo "after updating values file"
           ls -a
           cat values.yaml
