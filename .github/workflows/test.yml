@@ -73,13 +73,13 @@ jobs:
       - name: Update Image Tag in Helm chart
         run: |
           tar xvfz metabob-site-0.1.0.tgz
-          cd metabob-site
+          cd chart
           sed -i 's/tag:.*/tag: "${{ steps.get-tag.outputs.tag }}"/g' values.yaml
           cat values.yaml
           cd ../
-          tar -zcvf metabob-site.tar.gz metabob-site
+          tar -zcvf chart.tar.gz chart
           
       - name: Pushing Updated helm chart in Harbor
         run: |
-          helm cm-push -f metabob-site.tar.gz harbor
+          helm cm-push -f chart.tar.gz harbor
         
