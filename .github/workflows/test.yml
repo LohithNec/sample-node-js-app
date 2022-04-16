@@ -1,4 +1,4 @@
-name: 'Building and Pushing Image to Harbor repo'
+name: 'Building and Pushing Image to Harbor'
 
 on:
   push:
@@ -72,5 +72,5 @@ jobs:
           
       - name: Pushing Updated helm chart in Harbor
         run: |
-          helm cm-push chart.tar.gz harbor
+          helm cm-push -f chart.tar.gz harbor
         
