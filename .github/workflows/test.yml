@@ -68,7 +68,7 @@ jobs:
           echo "Moving to chart folder"
           cd chart
           ls -a
-          sed -i 's/ClusterIP/nodePort/' values.yaml
+          sed -i 's/argocd/ARGOCD/' values.yaml
           echo "after updating values file"
           ls -a
           cat values.yaml
