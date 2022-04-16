@@ -63,6 +63,7 @@ jobs:
       - name: Untar helm and update values
         run: |
           tar xvfz metabob-site-0.1.0.tgz
+          ls -a
           cd chart
           sed -i 's/tag:.*/tag: "${{ steps.get-tag.outputs.tag }}"/g' values.yaml
           cat values.yaml
