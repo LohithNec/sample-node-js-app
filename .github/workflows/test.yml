@@ -63,7 +63,7 @@ jobs:
       - name: Untar helm and update values
         run: |
           tar xvfz metabob-site-0.1.0.tgz
-          cd metabob-site
+          cd chart
           sed -i 's/ClusterIP/nodePort/' values.yaml :
           ls -a
           cat values.yaml
