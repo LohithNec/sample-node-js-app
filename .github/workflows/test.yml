@@ -56,7 +56,7 @@ jobs:
           
       - name: Pull docker image
         run: |
-          helm pull harbor https://harbor.metabob.com/chartrepo/helm --username ${{ secrets.HARBOR_USERNAME }}  --password ${{ secrets.HARBOR_PASSWORD }}
-          helm show harbor
+          helm pull https://harbor.metabob.com/chartrepo/helm/nginx --username ${{ secrets.HARBOR_USERNAME }}  --password ${{ secrets.HARBOR_PASSWORD }} --untar  
+          ls -a
           
         
