@@ -64,7 +64,8 @@ jobs:
         run: |
           tar xvfz metabob-site-0.1.0.tgz
           cd chart
-          sed -i 's/tag:*/tag:${{ steps.get-tag.outputs.tag }}/g' values.yaml
+          sed -i 's/tag:*/tag:"${{ steps.get-tag.outputs.tag }}"/g' values.yaml
+          cat values.yaml
           cd ../
           tar -zcvf chart.tar.gz chart
           ls -a
