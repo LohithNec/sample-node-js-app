@@ -67,7 +67,7 @@ jobs:
           
       - name: Pull Helm chart from Harbor
         run: |
-          helm repo add harbor https://harbor.metabob.com/chartrepo/helmrepo --username ${{ secrets.HARBOR_USERNAME }}  --password ${{ secrets.HARBOR_PASSWORD }}
+          helm repo add harbor https://harbor.metabob.com/chartrepo/helm --username ${{ secrets.HARBOR_USERNAME }}  --password ${{ secrets.HARBOR_PASSWORD }}
           helm pull harbor/metabob-site
           
       - name: Update Image Tag in Helm chart
