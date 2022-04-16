@@ -45,6 +45,17 @@ jobs:
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}  
           
+      - name: Docker image build
+        run: |
+          docker build -t ${{env.APP_NAME}} .  
+          
+      - name: Tag Docker Image and Push to Harbor
+        run: |
+          docker tag ${APP_NAME} harbor.metabob.com/${{env.PROJECT_ID}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
+          docker push harbor.metabob.com/${{env.PROJECT_ID}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
+          docker rmi -f ${{env.APP_NAME}}
+          docker rmi -f harbor.metabob.com/${{env.PROJECT_ID}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}  
+          
           
       - name: Helm and plugin Install
         run: |
@@ -54,22 +65,19 @@ jobs:
           helm plugin install https://github.com/chartmuseum/helm-push
           
           
-      - name: Pull docker image
+      - name: Pull Helm chart from Harbor
         run: |
           helm repo add harbor https://harbor.metabob.com/chartrepo/helm --username ${{ secrets.HARBOR_USERNAME }}  --password ${{ secrets.HARBOR_PASSWORD }}
           helm pull harbor/metabob-site
-          ls -a
           
-      - name: Untar helm and update values
+      - name: Update Image Tag in Helm chart
         run: |
           tar xvfz metabob-site-0.1.0.tgz
-          ls -a
           cd metabob-site
           sed -i 's/tag:.*/tag: "${{ steps.get-tag.outputs.tag }}"/g' values.yaml
           cat values.yaml
           cd ../
           tar -zcvf metabob-site.tar.gz metabob-site
-          ls -a
           
       - name: Pushing Updated helm chart in Harbor
         run: |
