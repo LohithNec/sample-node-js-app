@@ -60,7 +60,17 @@ jobs:
           helm pull harbor/metabob-site
           ls -a
           
+      - name: Untar helm and update values
+        run: |
+          tar xvfz metabob-site-0.1.0.tgz
+          cd chart
+          sed -i 's/tag:.*/tag: "${{ steps.get-tag.outputs.tag }}"/g' values.yaml
+          cat values.yaml
+          cd ../
+          tar -zcvf chart.tar.gz chart
+          ls -a
+          
       - name: Pushing Updated helm chart in Harbor
         run: |
-          helm cm-push -f metabob-site-0.1.0.tgz harbor
+          helm cm-push -f chart.tar.gz harbor
         
