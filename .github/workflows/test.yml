@@ -1,4 +1,4 @@
-name: 'Building and Pushing Image to Harbor'
+name: 'Building and Pushing Image to Harbor Repository'
 
 on:
   push:
@@ -11,8 +11,11 @@ on:
     
 env:
   APP_NAME: metabobapp
-  PROJECT_ID: integration
+  PROJECT_NAME: integration
   REPO_NAME: metabob-site
+  CHART_NAME: metabob-site
+  CHART_VERSION: 0.1.0
+  CHART_REPO_NAME: helm
 
 jobs:
   build:
@@ -43,21 +46,9 @@ jobs:
         with:
           registry: harbor.metabob.com
           username: ${{ secrets.HARBOR_USERNAME }}
-          password: ${{ secrets.HARBOR_PASSWORD }}  
+          password: ${{ secrets.HARBOR_PASSWORD }}          
           
-      - name: Docker image build
-        run: |
-          docker build -t ${{env.APP_NAME}} .  
-          
-      - name: Tag Docker Image and Push to Harbor
-        run: |
-          docker tag ${APP_NAME} harbor.metabob.com/${{env.PROJECT_ID}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
-          docker push harbor.metabob.com/${{env.PROJECT_ID}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
-          docker rmi -f ${{env.APP_NAME}}
-          docker rmi -f harbor.metabob.com/${{env.PROJECT_ID}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}  
-          
-          
-      - name: Helm and plugin Install
+      - name: Helm and helm-push plugin Install
         run: |
           curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
           chmod 700 get_helm.sh
@@ -67,19 +58,26 @@ jobs:
           
       - name: Pull Helm chart from Harbor
         run: |
-          helm repo add harbor https://harbor.metabob.com/chartrepo/helm --username ${{ secrets.HARBOR_USERNAME }}  --password ${{ secrets.HARBOR_PASSWORD }}
-          helm pull harbor/metabob-site
+          echo "Before pull"
+          ls -a
+          helm repo add harbor https://harbor.metabob.com/chartrepo/${{env.CHART_REPO_NAME}} --username ${{ secrets.HARBOR_USERNAME }}  --password ${{ secrets.HARBOR_PASSWORD }}
+          helm pull harbor/${{env.CHART_NAME}}
+          echo "After pull"
+          ls -a
           
       - name: Update Image Tag in Helm chart
         run: |
-          tar xvfz metabob-site-0.1.0.tgz
-          cd metabob-site
+          tar xvfz ${{env.CHART_NAME}}-${{env.CHART_VERSION}}.tgz
+          cd chart
           sed -i 's/tag:.*/tag: "${{ steps.get-tag.outputs.tag }}"/g' values.yaml
           cat values.yaml
           cd ../
-          tar -zcvf metabob-site.tar.gz metabob-site
+          tar -zcvf chart.tar.gz chart
           
       - name: Pushing Updated helm chart in Harbor
         run: |
-          helm cm-push -f metabob-site.tar.gz harbor
+          helm cm-push -f chart.tar.gz harbor
         
+      - name: Cleanup 
+        run: |
+          rm -rf *
