@@ -67,12 +67,12 @@ jobs:
           
       - name: Update Image Tag in Helm chart
         run: |
-          tar xvfz ${{env.CHART_NAME}}-${{env.CHART_VERSION}}.tgz chart
-          cd chart
+          tar xvfz ${{env.CHART_NAME}}-${{env.CHART_VERSION}}.tgz
+          cd ${{env.CHART_NAME}}
           sed -i 's/tag:.*/tag: "${{ steps.get-tag.outputs.tag }}"/g' values.yaml
           cat values.yaml
           cd ../
-          tar -zcvf chart.tar.gz chart
+          tar -zcvf ${{env.CHART_NAME}}.tar.gz ${{env.CHART_NAME}}
           
       - name: Pushing Updated helm chart in Harbor
         run: |
