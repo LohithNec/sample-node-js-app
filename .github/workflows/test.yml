@@ -46,38 +46,21 @@ jobs:
         with:
           registry: harbor.metabob.com
           username: ${{ secrets.HARBOR_USERNAME }}
-          password: ${{ secrets.HARBOR_PASSWORD }}          
+          password: ${{ secrets.HARBOR_PASSWORD }}  
           
-      - name: Helm and helm-push plugin Install
+      - name: Docker image build
         run: |
-          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
-          chmod 700 get_helm.sh
-          ./get_helm.sh
-          helm plugin install https://github.com/chartmuseum/helm-push
+          echo "Docker images before creation"
+          docker images
+          docker build -t ${{env.APP_NAME}} .  
           
+      - name: Tag Docker Image and Push to Harbor
+        run: |
+          docker tag ${APP_NAME} harbor.metabob.com/${{env.PROJECT_NAME}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
+          docker push harbor.metabob.com/${{env.PROJECT_NAME}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
+          echo "After tagging"
+          docker images
+          docker image prune -a -f 
+          echo "After pruning"
+          docker images
           
-      - name: Pull Helm chart from Harbor
-        run: |
-          echo "Before pull"
-          ls -a
-          helm repo add harbor https://harbor.metabob.com/chartrepo/${{env.CHART_REPO_NAME}} --username ${{ secrets.HARBOR_USERNAME }}  --password ${{ secrets.HARBOR_PASSWORD }}
-          helm pull harbor/${{env.CHART_NAME}}
-          echo "After pull"
-          ls -a
-          
-      - name: Update Image Tag in Helm chart
-        run: |
-          tar xvfz ${{env.CHART_NAME}}-${{env.CHART_VERSION}}.tgz
-          cd ${{env.CHART_NAME}}
-          sed -i 's/tag:.*/tag: "${{ steps.get-tag.outputs.tag }}"/g' values.yaml
-          cat values.yaml
-          cd ../
-          tar -zcvf ${{env.CHART_NAME}}.tar.gz ${{env.CHART_NAME}}
-          
-      - name: Pushing Updated helm chart in Harbor
-        run: |
-          helm cm-push -f ${{env.CHART_NAME}}.tar.gz harbor
-        
-      - name: Cleanup 
-        run: |
-          rm -rf *
