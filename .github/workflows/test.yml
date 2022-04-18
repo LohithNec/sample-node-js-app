@@ -78,8 +78,8 @@ jobs:
           ls -a
           cd ${{env.CHART_NAME}}
           sed -i 's/tag:.*/tag: "${{ steps.get-tag.outputs.tag }}"/g' values.yaml
-          sed -i 's/version:.*/version: "${{ steps.get-tag.outputs.tag }}"/g' chart.yaml
-          sed -i 's/appVersion:.*/appVersion: "${{ steps.get-tag.outputs.tag }}"/g' chart.yaml
+          sed -i 's/version:.*/version: "${{ steps.get-tag.outputs.tag }}"/g' Chart.yaml
+          sed -i 's/appVersion:.*/appVersion: "${{ steps.get-tag.outputs.tag }}"/g' Chart.yaml
           cd ../
           tar -zcvf ${{env.CHART_NAME}}.tar.gz ${{env.CHART_NAME}}
           
