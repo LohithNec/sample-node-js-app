@@ -76,6 +76,7 @@ jobs:
         run: |
           mkdir chart
           tar xvfz ${{env.CHART_NAME}}-${{env.CHART_VERSION}}.tgz chart/
+          ls -a
           cd chart
           sed -i 's/tag:.*/tag: "${{ steps.get-tag.outputs.tag }}"/g' values.yaml
           sed -i 's/version:.*/version: "${{ steps.get-tag.outputs.tag }}"/g' chart.yaml
@@ -87,6 +88,6 @@ jobs:
         run: |
           helm cm-push -f ${{env.CHART_NAME}}.tar.gz harbor
         
-      - name: Cleanup 
+      - name: Files Cleanup 
         run: |
           rm -rf *
