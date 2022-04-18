@@ -74,7 +74,7 @@ jobs:
           
       - name: Update Image Tag and chart version in Helm chart
         run: |
-          mkdir chart
+          mkdir -p ${{env.CHART_NAME}}
           tar xvfz ${{env.CHART_NAME}}-${{env.CHART_VERSION}}.tgz chart/
           ls -a
           cd chart
@@ -82,7 +82,7 @@ jobs:
           sed -i 's/version:.*/version: "${{ steps.get-tag.outputs.tag }}"/g' chart.yaml
           sed -i 's/appVersion:.*/appVersion: "${{ steps.get-tag.outputs.tag }}"/g' chart.yaml
           cd ../
-          tar -zcvf ${{env.CHART_NAME}}.tar.gz chart
+          tar -zcvf ${{env.CHART_NAME}}.tar.gz ${{env.CHART_NAME}}
           
       - name: Pushing Updated helm chart in Harbor
         run: |
