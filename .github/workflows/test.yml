@@ -58,7 +58,6 @@ jobs:
           mkdir -p ${{env.CHART_NAME}}
           tar xvfz ${{env.CHART_NAME}}-*.tgz ${{env.CHART_NAME}}/
           ls -a
-          cd ${{env.CHART_NAME}}
           
       - name: Update Helm Chart Values.yaml
         uses: rishindra23/helm-set-image-tag-action@main
