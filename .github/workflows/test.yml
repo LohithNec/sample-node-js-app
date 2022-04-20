@@ -76,9 +76,11 @@ jobs:
           tag_value: ${{ steps.get-tag.outputs.tag }}
           bump_level: null
           
-      - name: testing stage
+      - name: Pushing Updated helm chart in Harbor
         run: |
-          ls -a
+          cd ../
+          tar -zcvf ${{env.CHART_NAME}}.tar.gz ${{env.CHART_NAME}}
+          helm cm-push -f ${{env.CHART_NAME}}.tar.gz harbor
         
       - name: Files Cleanup 
         run: |
