@@ -68,6 +68,8 @@ jobs:
           
       - name: Pull Helm chart from Harbor
         run: |
+          echo "Helm version"
+          helm version
           helm repo add harbor https://harbor.metabob.com/chartrepo/${{env.CHART_REPO_NAME}} --username ${{ secrets.HARBOR_USERNAME }}  --password ${{ secrets.HARBOR_PASSWORD }}
           helm pull harbor/${{env.CHART_NAME}}
           
