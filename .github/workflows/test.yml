@@ -46,39 +46,96 @@ jobs:
           registry: harbor.metabob.com
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}  
-          
-      - name: Docker image build
+           
+      - name: Helm and helm-push plugin Install
         run: |
-          docker build -t ${{env.APP_NAME}} .  
-          
-      - name: Tag Docker Image and Push to Harbor
-        run: |
-          docker tag ${APP_NAME} harbor.metabob.com/${{env.PROJECT_NAME}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
-          docker push harbor.metabob.com/${{env.PROJECT_NAME}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
-          docker image prune -a -f 
-          docker images 
+          helm plugin install https://github.com/chartmuseum/helm-push      
           
       - name: Pull Helm chart from Harbor
         run: |
           helm repo add harbor https://harbor.metabob.com/chartrepo/${{env.CHART_REPO_NAME}} --username ${{ secrets.HARBOR_USERNAME }}  --password ${{ secrets.HARBOR_PASSWORD }}
           helm pull harbor/${{env.CHART_NAME}}
-          
-      - name: Update Image Tag and chart version in Helm chart
-        run: |
           mkdir -p ${{env.CHART_NAME}}
           tar xvfz ${{env.CHART_NAME}}-*.tgz ${{env.CHART_NAME}}/
           ls -a
           cd ${{env.CHART_NAME}}
-          sed -i 's/tag:.*/tag: "${{ steps.get-tag.outputs.tag }}"/g' values.yaml
-          sed -i 's/version:.*/version: "${{ steps.get-tag.outputs.tag }}"/g' Chart.yaml
-          sed -i 's/appVersion:.*/appVersion: "${{ steps.get-tag.outputs.tag }}"/g' Chart.yaml
-          cd ../
-          tar -zcvf ${{env.CHART_NAME}}.tar.gz ${{env.CHART_NAME}}
           
-      - name: Pushing Updated helm chart in Harbor
+      - name: Update Helm Chart Values
+        uses: Nextdoor/helm-set-image-tag-action@main
+        with:
+        # A comma-separated list of Values files to update. We default to
+        # `chart/values.yaml`, but you can patch multiple values files at once if
+        # you need to. There should be only one chart being updated though. To
+        # update multiple charts, run this action multiple times.
+        #
+          values_files: values.yaml
+
+        # A comma-separated list of keys to update within the Values file(s).
+        # The keys should be in Dot-notation and always start with a `.`. Only
+        # one "value" can be applied to these tags (see `tag_value` below) - so
+        # multiple keys here only makes sense if you use the image tag value in
+        # multiple places inside your chart.
+        #
+        # tag_keys: .image.tag
+
+        # This is the value that will be set in the Values files on the Tag
+        # Keys (see above). If this build is running on git tag `v1.2.3` and your
+        # docker image tag is `release-v1.2.3`, then you would set this to
+        # `release-${{ github.ref }}`
+        #
+          tag_value: ${{ github.ref }}
+
+        # This is the sem-ver level that will be bumped for each release.
+        # `major`, `minor`, `path` or `null` are allowed. If you set `null` then
+        # it will skip bumping the version.
+        #
+        # bump_level: patch
+
+        # `true` or `false` - whether or not to run the helm-docs generator.
+        #
+        # helm_docs: true
+
+        # Generally you want to set this to whatever your primary `HEAD` commit
+        # points to (`main` or `master` typically). Without setting this, a
+        # detached-commit will be created but no pointer will exist for it. You
+        # will need to introduce your own code to create a branch or tag that
+        # points to this commit.
+        #
+#          commit_branch: main
+
+        # Instead of (or in addition to) putting the newly created release
+        # commit on the $commit_branch, you can also create a tag that points to
+        # this commit. This allows you to avoid writing back to main if you
+        # prefer to use git tags to maintain your releases. 
+        #
+        # In this example, we take the "tag name" that we were triggered on and
+        # create a new tag appending "-chart" to it.
+        #
+ #         commit_tag: ${{ github.ref }}-chart
+
+        # Override the message used in the git commit.
+        #
+        # commit_message: Automated commit on behalf-of ${{ github.actor }}
+
+        # Optional commit arguments
+        #
+        # commit_options: ''
+
+        # Set the action to run in `set -x` mode for very verbose logging. Set
+        # to `true` or `false`.
+        #
+        # verbose: false
+
+        # Optionally run the action in 'dry' mode - where all of the normal
+        # actions happen, but no `git commit` happens. Useful for initial testing
+        # of the configuration. Set to `true` or `false`.
+        #
+        # dry: false
+        
+          
+      - name: testing stage
         run: |
-          helm registry login -u ${{ secrets.HARBOR_USERNAME }} -p ${{ secrets.HARBOR_PASSWORD }} harbor.metabob.com
-          helm push ${{env.CHART_NAME}}.tar.gz harbor
+          ls -a
         
       - name: Files Cleanup 
         run: |
