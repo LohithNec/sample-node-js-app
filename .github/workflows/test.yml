@@ -77,7 +77,7 @@ jobs:
           
       - name: Pushing Updated helm chart in Harbor
         run: |
-          helm push ${{env.CHART_NAME}}.tar.gz harbor
+          helm push ${{env.CHART_NAME}}.tar.gz https://harbor.metabob.com/chartrepo/${{env.CHART_REPO_NAME}}
         
       - name: Files Cleanup 
         run: |
