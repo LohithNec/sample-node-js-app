@@ -1,4 +1,4 @@
-name: 'Building and Pushing Image to Harbor Repository'
+name: 'Building and Pushing Image to Harbor Repo'
 
 on:
   push:
@@ -63,9 +63,11 @@ jobs:
       - name: Update Helm Chart Values
         uses: rishindra23/helm-set-image-tag-action@main
         with:
-          values_files: ${{env.CHART_NAME}}/values.yaml
-          tag_keys: .image.tag
+          values_files: ${{env.CHART_NAME}}/values.yaml,${{env.CHART_NAME}}/Chart.yaml
+          tag_keys: .image.tag,.version
           tag_value: ${{ steps.get-tag.outputs.tag }}
+          bump_level: null
+          
           
       - name: testing stage
         run: |
