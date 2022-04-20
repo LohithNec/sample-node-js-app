@@ -60,14 +60,21 @@ jobs:
           ls -a
           cd ${{env.CHART_NAME}}
           
-      - name: Update Helm Chart Values
+      - name: Update Helm Chart Values.yaml
         uses: rishindra23/helm-set-image-tag-action@main
         with:
-          values_files: ${{env.CHART_NAME}}/values.yaml,${{env.CHART_NAME}}/Chart.yaml
+          values_files: ${{env.CHART_NAME}}/values.yaml
           tag_keys: .image.tag,.version
           tag_value: ${{ steps.get-tag.outputs.tag }}
           bump_level: null
           
+      - name: Update Helm Chart chart.yaml
+        uses: rishindra23/helm-set-image-tag-action@main
+        with:
+          values_files: ${{env.CHART_NAME}}/Chart.yaml
+          tag_keys: .version
+          tag_value: ${{ steps.get-tag.outputs.tag }}
+          bump_level: null
           
       - name: testing stage
         run: |
