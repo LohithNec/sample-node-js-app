@@ -46,6 +46,17 @@ jobs:
           registry: harbor.metabob.com
           username: ${{ secrets.HARBOR_USERNAME }}
           password: ${{ secrets.HARBOR_PASSWORD }}  
+          
+      - name: Docker image build
+        run: |
+          docker build -t ${{env.APP_NAME}} .  
+          
+      - name: Tag Docker Image and Push to Harbor
+        run: |
+          docker tag ${APP_NAME} harbor.metabob.com/${{env.PROJECT_NAME}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
+          docker push harbor.metabob.com/${{env.PROJECT_NAME}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
+          docker image prune -a -f 
+          docker images 
            
       - name: Helm and helm-push plugin Install
         run: |
@@ -59,7 +70,7 @@ jobs:
           tar xvfz ${{env.CHART_NAME}}-*.tgz ${{env.CHART_NAME}}/
           ls -a
           
-      - name: Update Helm Chart Values.yaml
+      - name: Updating Helm Chart Values.yaml file
         uses: rishindra23/helm-set-image-tag-action@main
         with:
           values_files: ${{env.CHART_NAME}}/values.yaml
@@ -67,7 +78,7 @@ jobs:
           tag_value: ${{ steps.get-tag.outputs.tag }}
           bump_level: null
           
-      - name: Update Helm Chart chart.yaml
+      - name: Updating Helm chart.yaml file
         uses: rishindra23/helm-set-image-tag-action@main
         with:
           values_files: ${{env.CHART_NAME}}/Chart.yaml
