@@ -77,7 +77,7 @@ jobs:
           
       - name: Pushing Updated helm chart in Harbor
         run: |
-          helm push -f ${{env.CHART_NAME}}.tar.gz harbor
+          helm push ${{env.CHART_NAME}}.tar.gz harbor
         
       - name: Files Cleanup 
         run: |
