@@ -78,7 +78,7 @@ jobs:
       - name: Pushing Updated helm chart in Harbor
         run: |
           helm registry login -u ${{ secrets.HARBOR_USERNAME }} -p ${{ secrets.HARBOR_PASSWORD }} harbor.metabob.com
-          helm push ${{env.CHART_NAME}}.tar.gz oci://harbor.metabob.com/chartrepo/${{env.CHART_REPO_NAME}} -u ${{ secrets.HARBOR_USERNAME }} -p ${{ secrets.HARBOR_PASSWORD }}
+          helm push ${{env.CHART_NAME}}.tar.gz oci://harbor.metabob.com/chartrepo/${{env.CHART_REPO_NAME}} -username ${{ secrets.HARBOR_USERNAME }} -password ${{ secrets.HARBOR_PASSWORD }}
         
       - name: Files Cleanup 
         run: |
