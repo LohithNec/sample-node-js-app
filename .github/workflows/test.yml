@@ -79,8 +79,6 @@ jobs:
       - name: Pushing Updated helm chart in Harbor
         run: |
           ls -a
-          cd ../
-          ls -a
           tar -zcvf ${{env.CHART_NAME}}.tar.gz ${{env.CHART_NAME}}
           helm cm-push -f ${{env.CHART_NAME}}.tar.gz harbor
         
