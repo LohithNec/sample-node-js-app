@@ -58,7 +58,7 @@ jobs:
            
       - name: Helm and helm-push plugin Install
         run: |
-          helm plugin install rishindra23/helm-push      
+          helm plugin install https://github.com/rishindra23/helm-push     
           
       - name: Pull Helm chart from Harbor
         run: |
