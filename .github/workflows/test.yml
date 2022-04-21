@@ -1,4 +1,4 @@
-name: 'Building and Pushing Image to Harbor Repository'
+name: 'Building and Pushing Image to Harbor Repo'
 
 on:
   push:
