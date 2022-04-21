@@ -54,9 +54,7 @@ jobs:
       - name: Tag Docker Image and Push to Harbor
         run: |
           docker tag ${APP_NAME} harbor.metabob.com/${{env.PROJECT_NAME}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
-          docker push harbor.metabob.com/${{env.PROJECT_NAME}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }}
-          docker image prune -a -f 
-          docker images 
+          docker push harbor.metabob.com/${{env.PROJECT_NAME}}/${{env.REPO_NAME}}:${{ steps.get-tag.outputs.tag }} 
            
       - name: Helm and helm-push plugin Install
         run: |
@@ -92,6 +90,8 @@ jobs:
           tar -zcvf ${{env.CHART_NAME}}.tar.gz ${{env.CHART_NAME}}
           helm cm-push -f ${{env.CHART_NAME}}.tar.gz harbor
         
-      - name: Files Cleanup 
+      - name: Files and images Cleanup 
         run: |
+          docker image prune -a -f 
+          docker images
           rm -rf *
