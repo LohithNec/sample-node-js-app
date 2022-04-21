@@ -72,7 +72,7 @@ jobs:
         uses: rishindra23/helm-set-image-tag-action@main
         with:
           values_files: ${{env.CHART_NAME}}/values.yaml
-          tag_keys: .image.tag,.version
+          tag_keys: .image.tag
           tag_value: ${{ steps.get-tag.outputs.tag }}
           bump_level: null
           
